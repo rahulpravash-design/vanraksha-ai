@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vanraksha-ai-engine"
+version = "1.0.0"
+description = "Explainable triage, geo-temporal cluster detection and aberration detection for livestock health surveillance"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# No runtime dependencies: the engine must import cleanly in the API
+# container, a notebook, a batch job and a bare test harness alike.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+include = ["vanraksha_ai*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008"]
