@@ -1,0 +1,47 @@
+# One-command local stack: API + web app, both backed by the AI engine.
+#
+# Quick start:
+#   docker compose up --build
+#   docker compose exec api python -m app.cli seed --days 90
+#
+# Then open http://localhost:3000 and sign in with any account the seed
+# prints (all share the password VanrakshaDemo2026!).
+#
+# This uses SQLite in a named volume for zero-config startup. Point
+# VANRAKSHA_DATABASE_URL at a PostgreSQL DSN for anything beyond a demo —
+# see docs/10-deployment/deployment.md.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      VANRAKSHA_ENVIRONMENT: development
+      VANRAKSHA_DATABASE_URL: sqlite:////data/vanraksha.db
+      VANRAKSHA_SECRET_KEY: dev-only-insecure-key-change-me-before-any-real-deployment
+      VANRAKSHA_CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - api-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api-data:

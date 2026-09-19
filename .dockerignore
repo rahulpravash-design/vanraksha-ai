@@ -1,0 +1,16 @@
+**/node_modules
+**/.next
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/*.egg-info
+**/.git
+**/*.db
+**/*.log
+services/api/tests
+services/ai-engine/tests
+apps/web/tsconfig.tsbuildinfo
+ml/data/raw
+ml/data/interim
+ml/data/processed
+ml/data/synthetic
