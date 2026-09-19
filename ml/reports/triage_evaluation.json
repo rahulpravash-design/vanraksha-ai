@@ -340,5 +340,5 @@
     }
   ],
   "notice": "Expected bands in this file were authored by the project team from published veterinary triage guidance. They have NOT been ratified by a practising veterinarian. Until they are, this set measures whether the engine does what the project intended -- which is a real and useful property, and is not the same as clinical correctness. See docs/05-ai/limitations.md.",
-  "evaluated_at": "2026-09-19T07:39:56.853303"
+  "evaluated_at": "2026-09-19T18:08:31.792488"
 }
