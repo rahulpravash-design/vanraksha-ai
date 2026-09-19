@@ -129,6 +129,10 @@ delete `vanraksha.db` and re-run to see them again. `Ctrl+C` stops both
 services. This was run end to end in this environment: seed → login → both
 `/docs` and `/login` returning 200 → a real token issued.
 
+For a guided walk through the seeded district — which account to use, which
+village holds the injected outbreak, and what each screen shows — see
+[`docs/demo-script.md`](docs/demo-script.md).
+
 ### Docker
 
 ```bash
@@ -174,7 +178,8 @@ apps/web/               Next.js app — field reporting, dashboards, case queue,
 services/ai-engine/      Dependency-free triage/clustering/anomaly engine
 services/api/            FastAPI + SQLAlchemy: auth, reports, cases, sweep
 ml/                      Synthetic data generation + evaluation harnesses
-docs/                    Problem framing, architecture, AI limitations
+docs/                    Problem framing, architecture, AI limitations,
+                         and the live demo run sheet (demo-script.md)
 docker-compose.yml       One-command local stack
 ```
 
