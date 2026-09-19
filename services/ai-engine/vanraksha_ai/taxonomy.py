@@ -183,6 +183,12 @@ TERMS: tuple[SymptomTerm, ...] = (
         synonyms=(
             "mouth ulcer", "blister in mouth", "tongue lesion", "vesicles",
             "mouth sores", "tongue ulcer", "muh me chhale",
+            # A plural on the LAST token is handled by the matcher, but one in
+            # the middle of a phrase needs its own entry: "blisters in mouth"
+            # does not contain "blister in mouth". These are the spellings
+            # farmers actually type for the vesicular syndrome.
+            "blisters in mouth", "blisters in the mouth", "blister in the mouth",
+            "mouth blister", "blister on tongue", "blisters on tongue",
         ),
     ),
     SymptomTerm(
@@ -190,7 +196,13 @@ TERMS: tuple[SymptomTerm, ...] = (
         label="Foot blisters / lesions between claws",
         syndromes=(SYNDROME_VESICULAR, SYNDROME_LOCOMOTOR),
         severity_weight=0.8,
-        synonyms=("hoof lesion", "blister on foot", "sore between hooves", "coronary band lesion"),
+        synonyms=(
+            "hoof lesion", "blister on foot", "sore between hooves",
+            "coronary band lesion",
+            "blisters on foot", "blisters on feet", "blister on feet",
+            "foot blister", "sores between hooves", "blisters between hooves",
+            "blister between hooves",
+        ),
     ),
     # ------------------------------------------------------------- locomotor
     SymptomTerm(
@@ -368,6 +380,25 @@ def _is_negated(haystack: str, start: int) -> bool:
     return any(cue in window for cue in _NEGATION_CUES)
 
 
+def _match_end(haystack: str, end: int) -> int | None:
+    """Where a surface-form match ends, allowing a plural on the last token.
+
+    The taxonomy lists singulars, but field text is overwhelmingly plural --
+    "mouth ulcers", "blisters", "tremors". Requiring a token boundary right
+    after the singular rejects every one of those, so a trailing "s" or "es"
+    is accepted as part of the match. Returns ``None`` when the surface form
+    ends mid-token, which is what stops "cough" matching "coughdrop".
+    """
+    for candidate in (end, end + 1, end + 2):
+        if candidate > len(haystack):
+            break
+        if candidate > end and haystack[end:candidate] not in ("s", "es"):
+            continue
+        if candidate == len(haystack) or haystack[candidate] == " ":
+            return candidate
+    return None
+
+
 @dataclass
 class NormalisationResult:
     codes: list[str] = field(default_factory=list)
@@ -412,10 +443,10 @@ def normalise(raw_symptoms: Iterable[str]) -> NormalisationResult:
             if idx == -1:
                 continue
             # Require token boundaries so "cough" does not match "coughdrop".
-            before_ok = idx == 0 or working[idx - 1] == " "
-            after = idx + len(surface)
-            after_ok = after == len(working) or working[after] == " "
-            if not (before_ok and after_ok):
+            if not (idx == 0 or working[idx - 1] == " "):
+                continue
+            after = _match_end(working, idx + len(surface))
+            if after is None:
                 continue
 
             matched_any = True
@@ -426,7 +457,7 @@ def normalise(raw_symptoms: Iterable[str]) -> NormalisationResult:
                 seen.add(code)
                 result.codes.append(code)
             # Blank the span so overlapping surface forms do not double-count.
-            working = working[:idx] + " " * len(surface) + working[after:]
+            working = working[:idx] + " " * (after - idx) + working[after:]
 
         if not matched_any:
             result.unmatched.append(raw.strip())

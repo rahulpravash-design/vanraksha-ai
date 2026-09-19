@@ -58,3 +58,36 @@ def test_dominant_syndrome_follows_clinical_weight():
 
 def test_accented_and_punctuated_input():
     assert taxonomy.normalise(["Fever, cough!"]).codes == ["fever", "cough"]
+
+
+def test_plural_field_text_matches_the_singular_term():
+    # Farmers write plurals; the taxonomy lists singulars. A token-boundary
+    # match rejected every one of these before the matcher allowed a plural
+    # on the final token.
+    for phrase, code in [
+        ("mouth ulcers", "oral_lesions"),
+        ("mouth blisters", "oral_lesions"),
+        ("tongue lesions", "oral_lesions"),
+        ("vesicles", "oral_lesions"),
+        ("foot blisters", "foot_lesions"),
+        ("tremors", "convulsions"),
+    ]:
+        assert taxonomy.normalise([phrase]).codes == [code], phrase
+
+
+def test_a_plural_inside_a_phrase_also_matches():
+    assert taxonomy.normalise(["blisters in mouth"]).codes == ["oral_lesions"]
+    assert taxonomy.normalise(["sores between hooves"]).codes == ["foot_lesions"]
+
+
+def test_plural_matching_does_not_break_the_token_boundary():
+    for phrase in ("coughdrop", "feverish", "sorest"):
+        result = taxonomy.normalise([phrase])
+        assert result.codes == [], phrase
+        assert result.unmatched == [phrase], phrase
+
+
+def test_a_negated_plural_is_still_a_negation():
+    result = taxonomy.normalise(["no mouth ulcers"])
+    assert result.codes == []
+    assert result.negated == ["oral_lesions"]
