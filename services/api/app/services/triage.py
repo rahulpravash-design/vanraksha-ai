@@ -184,14 +184,20 @@ def _sync_case(db: Session, report: HealthReport, band: RiskBand, target_hours: 
     if band not in CASE_OPENING_BANDS:
         return
 
+    # A case opens when the system learns about the report, not when the sweep
+    # happens to run. Using the wall clock here would stamp every case in a
+    # backfill with the same instant and make response-time analytics -- which
+    # are measured as (assigned_at - opened_at) -- meaningless.
+    opened_at = report.received_at or report.reported_at or utcnow()
     due = report.reported_at + timedelta(hours=target_hours)
+
     if case is None:
         db.add(
             Case(
                 report_id=report.id,
                 band=band.value,
                 status=CaseStatus.OPEN,
-                opened_at=utcnow(),
+                opened_at=opened_at,
                 due_at=due,
             )
         )

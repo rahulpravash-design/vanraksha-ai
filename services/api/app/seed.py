@@ -23,6 +23,8 @@ from sqlalchemy.orm import Session
 
 from .models import (
     Animal,
+    Case,
+    CaseStatus,
     Farm,
     HealthReport,
     Role,
@@ -296,7 +298,9 @@ def seed(db: Session, *, seed_value: int = 2026, days: int = 90) -> dict:
 
     for report in reports:
         assess_report(db, report)
+    db.flush()
 
+    worked = _advance_cases(db, rng, now)
     db.commit()
 
     return {
@@ -306,11 +310,45 @@ def seed(db: Session, *, seed_value: int = 2026, days: int = 90) -> dict:
         "farms": len(farms),
         "animals": len(animals),
         "reports": len(reports),
+        "cases_worked": worked,
         "note": (
             "All livestock health data in this dataset is synthetic and is intended "
             "for demonstration and testing only."
         ),
     }
+
+
+def _advance_cases(db: Session, rng: random.Random, now: datetime) -> int:
+    """Give the older cases a plausible veterinary history.
+
+    Without this every case in the dataset is open and unassigned, and the
+    response-performance panel -- median time to assignment, median time to a
+    recorded outcome, share of cases meeting their target -- has nothing to
+    measure. Cases opened in the last few days are left alone, so the queue
+    still looks like a live one.
+    """
+    vets = list(db.scalars(select(User).where(User.role == Role.VETERINARIAN)).all())
+    if not vets:
+        return 0
+
+    worked = 0
+    for case in db.scalars(select(Case)).all():
+        if (now - case.opened_at) < timedelta(days=4):
+            continue
+
+        case.assigned_vet_id = rng.choice(vets).id
+        case.assigned_at = case.opened_at + timedelta(hours=rng.uniform(0.5, 20))
+        case.first_response_at = case.assigned_at + timedelta(hours=rng.uniform(0.5, 6))
+
+        if rng.random() < 0.82:
+            case.status = CaseStatus.RESOLVED
+            case.closed_at = case.first_response_at + timedelta(hours=rng.uniform(1, 60))
+            case.outcome = rng.choice(["recovered", "treated", "referred", "died"])
+        else:
+            case.status = CaseStatus.IN_PROGRESS
+        worked += 1
+
+    return worked
 
 
 def _make_report(

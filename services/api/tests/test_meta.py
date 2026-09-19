@@ -80,3 +80,54 @@ class TestSeed:
         assert first["reports"] == second["reports"]
         assert first["animals"] == second["animals"]
         assert first["farms"] == second["farms"]
+
+
+class TestCors:
+    def test_both_loopback_spellings_are_allowed_in_development(self, client):
+        """A browser treats localhost and 127.0.0.1 as different origins; a
+        default carrying only one of them breaks depending on which URL the
+        developer typed."""
+        for origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
+            response = client.options(
+                "/api/v1/auth/login",
+                headers={
+                    "Origin": origin,
+                    "Access-Control-Request-Method": "POST",
+                },
+            )
+            assert response.headers.get("access-control-allow-origin") == origin, origin
+
+    def test_an_unlisted_origin_is_not_granted_access(self, client):
+        response = client.options(
+            "/api/v1/auth/login",
+            headers={
+                "Origin": "https://attacker.example",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+        assert response.headers.get("access-control-allow-origin") is None
+
+
+class TestSeedRealism:
+    def test_older_cases_carry_a_veterinary_history(self, db):
+        """Without worked cases the response-performance panel has nothing to
+        measure, and the demo silently claims a capability it cannot show."""
+        from app.models import Case, CaseStatus
+        from app.seed import seed
+
+        result = seed(db, days=90)
+        assert result["cases_worked"] > 0
+
+        cases = db.query(Case).all()
+        closed = [c for c in cases if c.closed_at is not None]
+        assert closed, "no case reached a recorded outcome"
+
+        for case in closed:
+            assert case.assigned_at >= case.opened_at
+            assert case.closed_at > case.assigned_at
+            assert case.outcome
+
+        # A live queue still has open work in it.
+        assert any(
+            c.status not in (CaseStatus.RESOLVED, CaseStatus.CLOSED) for c in cases
+        )

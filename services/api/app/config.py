@@ -37,7 +37,12 @@ class Settings(BaseSettings):
     access_token_minutes: int = 60 * 12
     refresh_token_days: int = 30
 
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    # Both spellings of the loopback host. A browser treats "localhost" and
+    # "127.0.0.1" as different origins, so a dev default carrying only one of
+    # them fails depending on which URL the developer happens to type.
+    cors_origins: list[str] = Field(
+        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
+    )
 
     # Surveillance sweep parameters. Exposed so a district can tune detection to
     # its own reporting density without a redeploy.

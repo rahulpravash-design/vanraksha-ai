@@ -178,3 +178,46 @@ class TestProgression:
 
         assert case.band == "emergency"
         assert case.due_at < original_due
+
+
+class TestCaseTimestamps:
+    def test_a_case_opens_when_the_report_arrived_not_when_triage_ran(
+        self, client, farmer_headers, farm, db
+    ):
+        """Stamping every case with the wall clock makes a backfill look like it
+        all happened at once, and makes (assigned_at - opened_at) meaningless.
+
+        For a live submission `received_at` is now, so the two coincide. The
+        case that matters is a historical import, where they must not.
+        """
+        from datetime import datetime, timedelta
+
+        from app.models import HealthReport
+        from app.services.triage import assess_report
+
+        _file(client, farmer_headers, farm, "backfill-0001", symptoms=["mouth ulcer"])
+
+        # Re-stamp the report as a historical import and re-triage it, which is
+        # what a backfill or a re-run of a tuned engine actually does.
+        report = db.query(HealthReport).one()
+        arrived = datetime.utcnow() - timedelta(days=9)
+        report.reported_at = arrived - timedelta(hours=2)
+        report.received_at = arrived
+        db.query(Case).delete()
+        db.commit()
+
+        assess_report(db, report)
+        db.commit()
+
+        case = db.query(Case).one()
+        assert case.opened_at == arrived
+        assert (datetime.utcnow() - case.opened_at) > timedelta(days=8)
+        # The deadline runs from the observation, so it has long passed.
+        assert case.is_overdue
+
+    def test_a_live_report_opens_its_case_now(self, client, farmer_headers, farm, db):
+        from datetime import datetime, timedelta
+
+        _file(client, farmer_headers, farm, "livecase-0001", symptoms=["mouth ulcer"])
+        case = db.query(Case).one()
+        assert (datetime.utcnow() - case.opened_at) < timedelta(minutes=5)

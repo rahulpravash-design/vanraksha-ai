@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Light and dark are two selected palettes, not an automatic inversion. Every
+ * value below was validated against the surface it actually renders on --
+ * including the ordinal band ramp, whose steps are spaced so that adjacent
+ * severity levels stay distinguishable rather than merging into a gradient.
+ *
+ * Charts read these same tokens, so the dashboard and the interface around it
+ * can never drift apart.
+ */
+:root {
+  color-scheme: light;
+
+  --page: #f9f9f7;
+  --surface-1: #fcfcfb;
+  --surface-2: #f2f1ed;
+
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+
+  --border: rgba(11, 11, 11, 0.10);
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+
+  /* Categorical. Only the first three slots are used; they are the set that
+     validates on all pairs, so a scatter or a map never needs a fourth. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+
+  /* Ordinal severity ramp: routine → emergency. One hue, monotone lightness. */
+  --band-routine: #86b6ef;
+  --band-monitor: #5598e7;
+  --band-priority: #2a78d6;
+  --band-urgent: #1c5cab;
+  --band-emergency: #0d366b;
+
+  /* Status. Fixed across themes; always shipped with an icon and a label. */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --success-text: #006300;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --page: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+
+    --border: rgba(255, 255, 255, 0.10);
+    --grid: #2c2c2a;
+    --axis: #383835;
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+
+    --band-routine: #cde2fb;
+    --band-monitor: #9ec5f4;
+    --band-priority: #6da7ec;
+    --band-urgent: #3987e5;
+    --band-emergency: #184f95;
+
+    --success-text: #0ca30c;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page: #0d0d0d;
+  --surface-1: #1a1a19;
+  --surface-2: #232321;
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+
+  --border: rgba(255, 255, 255, 0.10);
+  --grid: #2c2c2a;
+  --axis: #383835;
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+
+  --band-routine: #cde2fb;
+  --band-monitor: #9ec5f4;
+  --band-priority: #6da7ec;
+  --band-urgent: #3987e5;
+  --band-emergency: #184f95;
+
+  --success-text: #0ca30c;
+}
+
+html,
+body {
+  background: var(--page);
+  color: var(--text-primary);
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Field use means gloves, sunlight and one hand. Targets stay large. */
+button,
+[role="button"],
+a.tappable {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Columns that must align vertically get tabular figures; standalone hero
+   numbers keep proportional figures. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.hairline {
+  border-color: var(--border);
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}

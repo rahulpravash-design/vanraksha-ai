@@ -50,6 +50,12 @@ def _load_points(db: Session, since: datetime) -> list[ClusterPoint]:
         )
     ).all()
 
+    # The detector writes the locality straight into its explanation, so it is
+    # given the village *name*. Handing it an identifier produces a sentence
+    # like "9 reports in 1b290a92-5044-..." -- technically accurate and useless
+    # to the officer who has to act on it.
+    village_names = {v.id: v.name for v in db.scalars(select(Village)).all()}
+
     points: list[ClusterPoint] = []
     for report in reports:
         assessment = report.assessment
@@ -62,7 +68,7 @@ def _load_points(db: Session, since: datetime) -> list[ClusterPoint]:
                 symptom_codes=list(report.symptom_codes or []),
                 species=report.species,
                 species_group=SPECIES_GROUP.get(report.species, report.species),
-                village_id=report.village_id,
+                village_id=village_names.get(report.village_id or "", report.village_id),
                 animal_id=report.animal_id,
                 affected_count=report.affected_count,
                 deaths_count=report.deaths_count,
@@ -82,12 +88,10 @@ def run_sweep(db: Session, *, window_days: int = 21, now: datetime | None = None
     detected = detector.detect(points)
 
     seen_signatures: set[str] = set()
-    village_names = {v.id: v.name for v in db.scalars(select(Village)).all()}
 
     for cluster in detected:
         signature = _signature(cluster.point_ids)
         seen_signatures.add(signature)
-        named_villages = [village_names.get(v, v) for v in cluster.villages]
 
         existing = db.scalar(select(Cluster).where(Cluster.signature == signature))
         if existing is None:
@@ -110,7 +114,7 @@ def run_sweep(db: Session, *, window_days: int = 21, now: datetime | None = None
         existing.severity_score = cluster.severity_score
         existing.growth_ratio = cluster.growth_ratio
         existing.dominant_syndrome = cluster.dominant_syndrome
-        existing.villages = named_villages
+        existing.villages = cluster.villages
         existing.species = cluster.species
         existing.report_ids = cluster.point_ids
         existing.top_symptoms = [{"code": c, "count": n} for c, n in cluster.top_symptoms]
