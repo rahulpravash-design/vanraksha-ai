@@ -97,14 +97,18 @@ class TestSweep:
     def test_free_text_and_coded_symptoms_cluster_together(self, pipeline):
         """A farmer typing 'loose motion' and a vet coding 'diarrhoea' describe
         the same event, so they must land in the same cluster."""
+        # Four reports, because that is the detection threshold; the point of
+        # the test is that all four land together despite three different
+        # spellings of the same sign.
         reports = [
             report("R0", symptoms=["loose motion"], dlat=0.000, hours_ago=0),
             report("R1", symptoms=["diarrhoea"], dlat=0.003, hours_ago=12),
             report("R2", symptoms=["watery dung"], dlat=0.006, hours_ago=24),
+            report("R3", symptoms=["scours"], dlat=0.009, hours_ago=36),
         ]
         result = pipeline.sweep(reports, now=NOW)
         assert len(result.clusters) == 1
-        assert set(result.clusters[0].point_ids) == {"R0", "R1", "R2"}
+        assert set(result.clusters[0].point_ids) == {"R0", "R1", "R2", "R3"}
 
     def test_sweep_output_is_json_serialisable(self, pipeline):
         import json

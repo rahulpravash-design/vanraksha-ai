@@ -114,7 +114,9 @@ class TestDetection:
             assert len({cluster_species for cluster_species in cluster.species}) == 1
 
     def test_species_separation_can_be_disabled(self):
-        config = ClusterConfig(respect_species_group=False)
+        # min_reports is stated explicitly: this test is about species handling,
+        # and should not change meaning when the detection threshold is tuned.
+        config = ClusterConfig(respect_species_group=False, min_reports=3)
         mixed = [
             point("C1", species="cattle", species_group="bovine"),
             point("G1", dlat=0.002, hours=4, species="goat", species_group="small_ruminant"),
@@ -128,6 +130,18 @@ class TestDetection:
         two = [point("R0"), point("R1", dlat=0.002, hours=4)]
         assert detect_clusters(two) == []
         assert len(detect_clusters(two, ClusterConfig(min_reports=2))) == 1
+
+    def test_the_default_threshold_is_the_tuned_one(self):
+        """Pins the value the parameter sweep selected. Lowering it back to
+        three roughly eleven-folds the false-alert rate on background-only
+        data -- see ml/evaluate_detector.py."""
+        assert ClusterConfig().min_reports == 4
+        assert ClusterConfig().window_hours == 120.0
+
+        three = [point(f"R{i}", dlat=0.002 * i, hours=6 * i) for i in range(3)]
+        assert detect_clusters(three) == []
+        four = [point(f"R{i}", dlat=0.002 * i, hours=6 * i) for i in range(4)]
+        assert len(detect_clusters(four)) == 1
 
     def test_below_minimum_input_returns_empty(self):
         assert detect_clusters([point("R0")]) == []
@@ -177,10 +191,12 @@ class TestSummary:
         assert detect_clusters(fatal)[0].severity_score > detect_clusters(quiet)[0].severity_score
 
     def test_clusters_are_ordered_by_severity(self):
-        small = [point(f"S{i}", dlat=0.002 * i, hours=6 * i) for i in range(3)]
+        # Both groups clear the detection threshold; the point of the test is
+        # the ordering between them, not whether each one is found.
+        small = [point(f"S{i}", dlat=0.002 * i, hours=6 * i) for i in range(4)]
         big = [
             point(f"B{i}", dlat=2.0 + 0.002 * i, hours=6 * i, deaths_count=1, village_id="V-Big")
-            for i in range(6)
+            for i in range(7)
         ]
         clusters = detect_clusters(small + big)
         assert len(clusters) == 2

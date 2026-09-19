@@ -1,0 +1,127 @@
+{
+  "notice": "Expected bands in this file were authored by the project team from published veterinary triage guidance. They have NOT been ratified by a practising veterinarian. Until they are, this set measures whether the engine does what the project intended -- which is a real and useful property, and is not the same as clinical correctness. See docs/05-ai/limitations.md.",
+  "version": "1.0.0",
+  "bands": ["routine", "monitor", "priority", "urgent", "emergency"],
+  "vignettes": [
+    {
+      "id": "V001", "expect_min": "emergency", "expect_caution": "anthrax_like",
+      "why": "Sudden death with unclotted blood from the orifices: the carcass itself is the hazard, so the handling instruction cannot wait for a score.",
+      "observation": {"species": "cattle", "symptoms": ["found dead", "blood from nose"], "deaths_count": 1, "herd_size": 9}
+    },
+    {
+      "id": "V002", "expect_min": "emergency", "expect_caution": "rabies_like",
+      "why": "Aggression with profuse salivation puts a human exposure risk in front of the animal's prognosis.",
+      "observation": {"species": "cattle", "symptoms": ["sudden aggression", "frothing at mouth"], "herd_size": 6}
+    },
+    {
+      "id": "V003", "expect_min": "urgent", "expect_caution": "fmd_like",
+      "why": "Vesicular signs in a cloven-hoofed animal warrant movement restriction before confirmation.",
+      "observation": {"species": "cattle", "symptoms": ["mouth ulcer", "drooling"], "temperature_c": 40.2, "affected_count": 3, "herd_size": 18}
+    },
+    {
+      "id": "V004", "expect_min": "urgent", "expect_caution": "fmd_like",
+      "why": "Foot lesions with lameness are the same syndrome presenting at the other end.",
+      "observation": {"species": "buffalo", "symptoms": ["blister on foot", "limping"], "affected_count": 2, "herd_size": 11}
+    },
+    {
+      "id": "V005", "expect_min": "urgent", "expect_caution": "hs_like",
+      "why": "High fever with throat swelling and laboured breathing in a bovine is rapidly fatal; hours matter.",
+      "observation": {"species": "buffalo", "symptoms": ["fever", "swelling on neck", "difficulty breathing"], "temperature_c": 41.2, "herd_size": 14}
+    },
+    {
+      "id": "V006", "expect_min": "urgent", "expect_caution": "small_ruminant_febrile",
+      "why": "Fever with oculonasal discharge and diarrhoea across a flock precedes high mortality if left.",
+      "observation": {"species": "goat", "symptoms": ["fever", "watery eyes", "loose motion"], "temperature_c": 41.0, "affected_count": 6, "herd_size": 22}
+    },
+    {
+      "id": "V007", "expect_min": "priority", "expect_caution": "nodular_skin",
+      "why": "Firm nodules with fever in a bovine follow a vector-borne spread pattern; isolate and control vectors.",
+      "observation": {"species": "cattle", "symptoms": ["lumps on skin", "fever"], "temperature_c": 40.0, "herd_size": 12}
+    },
+    {
+      "id": "V008", "expect_min": "priority", "expect_caution": "abortion_cluster",
+      "why": "Several abortions in a short window raise an infectious reproductive cause with zoonotic handling implications.",
+      "observation": {"species": "cattle", "symptoms": ["abortion"], "affected_count": 3, "herd_size": 20}
+    },
+    {
+      "id": "V009", "expect_min": "urgent", "expect_caution": "poultry_mortality",
+      "why": "Rapid-onset flock mortality is the statutory investigation trigger, and some causes carry human risk.",
+      "observation": {"species": "poultry", "symptoms": ["found dead"], "deaths_count": 14, "affected_count": 20, "herd_size": 300}
+    },
+    {
+      "id": "V010", "expect_min": "priority",
+      "why": "An animal that cannot stand needs examination the same working day whatever the cause.",
+      "observation": {"species": "cattle", "symptoms": ["cannot stand"], "herd_size": 8}
+    },
+    {
+      "id": "V011", "expect_min": "priority",
+      "why": "Laboured breathing is a danger sign on its own.",
+      "observation": {"species": "cattle", "symptoms": ["difficulty breathing"], "temperature_c": 40.4, "herd_size": 10}
+    },
+    {
+      "id": "V012", "expect_min": "priority",
+      "why": "Bloody diarrhoea with dehydration in a calf decompensates fast.",
+      "observation": {"species": "cattle", "symptoms": ["blood in dung", "sunken eyes"], "age_months": 2, "herd_size": 14}
+    },
+    {
+      "id": "V013", "expect_min": "priority",
+      "why": "Deaths in a herd are never routine, even without other signs.",
+      "observation": {"species": "goat", "symptoms": ["fever", "dull"], "deaths_count": 2, "affected_count": 5, "herd_size": 25}
+    },
+    {
+      "id": "V014", "expect_min": "monitor", "expect_max": "priority",
+      "why": "Mastitis with abnormal milk needs attention and milk withdrawal, but is not an emergency.",
+      "observation": {"species": "cattle", "symptoms": ["swollen udder", "clots in milk"], "lactating": true, "herd_size": 9}
+    },
+    {
+      "id": "V015", "expect_min": "monitor", "expect_max": "priority",
+      "why": "A single febrile animal with dullness should be watched and re-reported if it worsens.",
+      "observation": {"species": "cattle", "symptoms": ["fever", "dull"], "temperature_c": 39.9, "herd_size": 12}
+    },
+    {
+      "id": "V016", "expect_min": "monitor", "expect_max": "priority",
+      "why": "Diarrhoea alone in an adult is common and usually self-limiting, but worth tracking.",
+      "observation": {"species": "buffalo", "symptoms": ["loose motion"], "herd_size": 16}
+    },
+    {
+      "id": "V017", "expect_max": "monitor",
+      "why": "Tick burden is a husbandry issue, not a veterinary emergency.",
+      "observation": {"species": "cattle", "symptoms": ["ticks"], "herd_size": 20}
+    },
+    {
+      "id": "V018", "expect_max": "monitor",
+      "why": "A modest milk drop in one animal is the single most common report and must not flood the queue.",
+      "observation": {"species": "cattle", "symptoms": ["less milk"], "lactating": true, "herd_size": 11}
+    },
+    {
+      "id": "V019", "expect_max": "monitor",
+      "why": "Repeat breeding is a fertility management matter handled at the next routine visit.",
+      "observation": {"species": "cattle", "symptoms": ["not conceiving"], "herd_size": 15}
+    },
+    {
+      "id": "V020", "expect_max": "monitor",
+      "why": "Mild lameness in one animal with a normal temperature.",
+      "observation": {"species": "cattle", "symptoms": ["limping"], "temperature_c": 38.7, "herd_size": 13}
+    },
+    {
+      "id": "V021", "expect_min": "priority",
+      "why": "A high herd attack rate turns an ordinary presentation into an event.",
+      "observation": {"species": "goat", "symptoms": ["loose motion", "dull"], "affected_count": 14, "herd_size": 20}
+    },
+    {
+      "id": "V022", "expect_min": "priority",
+      "why": "Subnormal temperature in a symptomatic animal is a late, poor-prognosis sign.",
+      "observation": {"species": "cattle", "symptoms": ["dull", "not eating"], "temperature_c": 36.4, "herd_size": 7}
+    },
+    {
+      "id": "V023", "expect_max": "monitor",
+      "why": "A report with nothing recognisable in it must not be escalated on the strength of its existence.",
+      "observation": {"species": "cattle", "symptoms": ["something seems a bit off"], "herd_size": 10}
+    },
+    {
+      "id": "V024", "expect_max": "priority",
+      "why": "Fever in a pregnant, up-to-date animal: vulnerability raises it, current vaccination tempers it.",
+      "observation": {"species": "cattle", "symptoms": ["fever"], "temperature_c": 40.1, "pregnant": true, "vaccination_status": "up_to_date", "herd_size": 9}
+    }
+  ]
+}

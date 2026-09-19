@@ -46,9 +46,11 @@ class Settings(BaseSettings):
 
     # Surveillance sweep parameters. Exposed so a district can tune detection to
     # its own reporting density without a redeploy.
+    # Tuned in ml/evaluate_detector.py; see ClusterConfig for the trade-off and
+    # why these must be re-tuned for a district with different reporting density.
     cluster_radius_km: float = 5.0
-    cluster_window_hours: float = 168.0
-    cluster_min_reports: int = 3
+    cluster_window_hours: float = 120.0
+    cluster_min_reports: int = 4
     anomaly_baseline_weeks: int = 10
 
     #: Optional. When unset, the assistant answers from deterministic templates.

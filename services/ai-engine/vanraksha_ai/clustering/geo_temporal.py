@@ -61,9 +61,30 @@ class ClusterPoint:
 
 @dataclass
 class ClusterConfig:
+    """Detection parameters.
+
+    The defaults come from the sweep in ``ml/evaluate_detector.py`` against
+    scenarios where the answer is known. On that data, raising ``min_reports``
+    from three to four cut false alerts on outbreak-free districts from 1.43
+    per scenario to 0.13 -- a 5.8x reduction -- while still finding every
+    injected event, at the cost of about a day of median detection delay.
+    Narrowing the window from seven days to five cut them further at no cost
+    to detection at all.
+
+    That trade is worth making because the two errors are not symmetrical: a
+    false cluster spends a veterinary team's day and, repeated, teaches a
+    block officer to ignore the system, after which its detection rate stops
+    mattering.
+
+    **These values are density-dependent.** They were tuned at roughly 0.3
+    background reports per village per day. A district reporting far more or
+    far less should re-run the sweep rather than inherit them -- see
+    docs/05-ai/clustering.md.
+    """
+
     radius_km: float = 5.0
-    window_hours: float = 168.0          # seven days
-    min_reports: int = 3                 # DBSCAN minPts, including the core point
+    window_hours: float = 120.0          # five days
+    min_reports: int = 4                 # DBSCAN minPts, including the core point
     min_similarity: float = 0.34         # share at least ~1 syndrome in 3
     #: When true, reports from species that do not share a disease pool are
     #: never treated as neighbours (a poultry death is not evidence about goats).

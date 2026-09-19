@@ -185,3 +185,127 @@ class TestStatutoryCautions:
             text = f"{caution.title} {caution.rationale}".lower()
             for phrase in banned:
                 assert phrase not in text, f"{caution.caution_id} reads as a diagnosis"
+
+
+class TestClinicalFloors:
+    """Floors for facts that outrank the arithmetic.
+
+    Every case here was a real under-triage found by the vignette set in
+    ml/evaluate_triage.py: the additive score reads "one sign, one animal, no
+    fever" as mild, when the single sign is the whole problem.
+    """
+
+    def test_a_downer_animal_reaches_priority_on_one_sign(self, engine):
+        result = engine.assess(obs(symptoms=["cannot stand"]))
+        assert result.band.rank >= RiskBand.PRIORITY.rank
+        assert result.score < 40, "the floor should be doing this, not the score"
+        assert any(c.rule_id == "FLOOR.danger_sign" for c in result.contributions)
+
+    def test_laboured_breathing_reaches_priority(self, engine):
+        assert engine.assess(obs(symptoms=["difficulty breathing"])).band.rank >= (
+            RiskBand.PRIORITY.rank
+        )
+
+    def test_blood_in_faeces_reaches_priority(self, engine):
+        assert engine.assess(obs(symptoms=["blood in dung"])).band.rank >= (
+            RiskBand.PRIORITY.rank
+        )
+
+    def test_a_husbandry_issue_is_not_floored(self, engine):
+        """Ticks and a milk drop must stay out of the veterinary queue, or the
+        floors trade one failure mode for a worse one."""
+        for sign in ("ticks", "less milk", "not conceiving"):
+            assert engine.assess(obs(symptoms=[sign])).band is RiskBand.ROUTINE, sign
+
+    def test_a_real_clinical_sign_is_at_least_monitored(self, engine):
+        for sign in ("loose motion", "swollen udder", "fever"):
+            band = engine.assess(obs(symptoms=[sign])).band
+            assert band.rank >= RiskBand.MONITOR.rank, sign
+
+    def test_a_high_herd_attack_rate_outranks_mild_signs(self, engine):
+        """Fourteen of twenty animals with loose motion is an event, however
+        unremarkable each individual case looks."""
+        few = engine.assess(obs(symptoms=["loose motion"], affected_count=1, herd_size=20))
+        many = engine.assess(obs(symptoms=["loose motion"], affected_count=14, herd_size=20))
+        assert few.band.rank < RiskBand.PRIORITY.rank
+        assert many.band.rank >= RiskBand.PRIORITY.rank
+        assert any(c.rule_id == "FLOOR.attack_rate" for c in many.contributions)
+
+    def test_any_death_reaches_priority(self, engine):
+        result = engine.assess(obs(symptoms=["dull"], deaths_count=1, herd_size=40))
+        assert result.band.rank >= RiskBand.PRIORITY.rank
+        assert any(c.rule_id == "FLOOR.mortality" for c in result.contributions)
+
+    def test_hypothermia_in_a_symptomatic_animal_reaches_priority(self, engine):
+        """Subnormal temperature reads as 'mildly abnormal' to an additive score
+        and means the opposite: the animal is decompensating."""
+        result = engine.assess(obs(symptoms=["dull", "not eating"], temperature_c=36.4))
+        assert result.band.rank >= RiskBand.PRIORITY.rank
+        assert any(c.rule_id == "FLOOR.hypothermia" for c in result.contributions)
+
+    def test_a_low_reading_without_any_sign_is_not_floored(self, engine):
+        """A thermometer misread on an otherwise well animal is a data problem,
+        not a clinical emergency."""
+        result = engine.assess(obs(symptoms=[], temperature_c=36.4))
+        assert result.band is RiskBand.ROUTINE
+
+    def test_every_floor_records_why_it_fired(self, engine):
+        """A band the visible points do not add up to must still be explainable."""
+        result = engine.assess(obs(symptoms=["cannot stand"], deaths_count=1, herd_size=10))
+        floors = [c for c in result.contributions if c.rule_id.startswith("FLOOR.")]
+        assert floors
+        for contribution in floors:
+            assert "Raised from" in contribution.evidence
+            assert contribution.points == 0.0
+
+
+class TestVignetteSet:
+    """The vignette set is the engine's behavioural specification.
+
+    Running it here means a rule change that quietly stops escalating downer
+    cows fails the build rather than being noticed in the field.
+    """
+
+    def test_every_vignette_meets_its_expectation(self):
+        import json
+        from datetime import datetime
+        from pathlib import Path
+
+        from vanraksha_ai.models import Observation, VaccinationStatus
+
+        path = Path(__file__).resolve().parents[3] / "ml" / "triage_vignettes.json"
+        if not path.exists():  # pragma: no cover - engine published standalone
+            pytest.skip("vignette set not present in this checkout")
+
+        payload = json.loads(path.read_text())
+        failures: list[str] = []
+
+        for vignette in payload["vignettes"]:
+            raw = dict(vignette["observation"])
+            status = raw.pop("vaccination_status", "unknown")
+            result = RiskEngine().assess(
+                Observation(
+                    report_id=vignette["id"],
+                    reported_at=datetime.utcnow(),
+                    vaccination_status=VaccinationStatus(status),
+                    **raw,
+                )
+            )
+
+            floor = vignette.get("expect_min")
+            ceiling = vignette.get("expect_max")
+            if floor and result.band.rank < RiskBand(floor).rank:
+                failures.append(
+                    f"{vignette['id']}: {result.band.value} < {floor} -- {vignette['why']}"
+                )
+            if ceiling and result.band.rank > RiskBand(ceiling).rank:
+                failures.append(
+                    f"{vignette['id']}: {result.band.value} > {ceiling} -- {vignette['why']}"
+                )
+            expected_caution = vignette.get("expect_caution")
+            if expected_caution and expected_caution not in [
+                c.caution_id for c in result.cautions
+            ]:
+                failures.append(f"{vignette['id']}: missing caution {expected_caution}")
+
+        assert not failures, "\n".join(failures)

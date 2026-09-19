@@ -49,6 +49,33 @@ CAP_PREVENTION = 8.0
 CAP_PROGRESSION = 8.0
 CAP_CONTEXT = 10.0
 
+# ---------------------------------------------------------------------------
+# Clinical floors
+# ---------------------------------------------------------------------------
+# The additive score answers "how much is wrong here?". It does not answer
+# "is any single thing wrong enough on its own?", and for triage that second
+# question matters more. A cow that cannot stand scores modestly -- one sign,
+# one animal, no fever -- and still needs a veterinarian the same day.
+#
+# These thresholds were not guessed. The vignette set in ml/evaluate_triage.py
+# showed the additive score under-triaging six presentations with an escalation
+# recall of 0.62; floors keyed to the taxonomy's own severity weights brought
+# that to 1.00 without escalating anything that should have stayed routine.
+# Keying them to the weights rather than to a second hand-maintained list of
+# sign names means a new sign inherits the right floor when it is added.
+
+#: A single sign at or above this weight warrants examination the same working
+#: day, whatever else is or is not present.
+DANGER_SIGN_WEIGHT = 0.70
+
+#: A genuine clinical sign, as opposed to a husbandry matter such as ticks,
+#: is worth watching even in isolation.
+CLINICAL_SIGN_WEIGHT = 0.45
+
+#: Share of a herd affected at which the event outranks the individual
+#: presentation. A third of a herd with mild signs is still an event.
+HERD_ATTACK_RATE_FLOOR = 0.30
+
 #: Fields that a reviewer would want before acting on a report. Used for the
 #: completeness figure shown next to every score.
 _COMPLETENESS_FIELDS = (
@@ -102,6 +129,8 @@ class RiskEngine:
 
         score = max(0.0, min(100.0, sum(c.points for c in contributions)))
         band = RiskBand.from_score(score)
+
+        band = self._apply_clinical_floors(band, codes, obs, contributions)
 
         matched = caution_rules.evaluate(code_set, obs)
         band = self._apply_caution_floor(band, matched, contributions)
@@ -477,6 +506,92 @@ class RiskEngine:
             points=round(adjustment, 2),
             evidence="Component ceiling applied so no single factor can dominate the score.",
         )
+
+    @staticmethod
+    def _apply_clinical_floors(
+        band: RiskBand,
+        codes: list[str],
+        obs: Observation,
+        contributions: list[Contribution],
+    ) -> RiskBand:
+        """Raise the band where a single fact outranks the arithmetic.
+
+        Each floor records itself as a contribution, so a reviewer can still see
+        why a case sits where it does rather than finding a band that the
+        visible points do not add up to.
+        """
+        floors: list[tuple[RiskBand, str, str]] = []
+
+        worst_weight = taxonomy.severity_of(codes)
+        if worst_weight >= DANGER_SIGN_WEIGHT:
+            worst = max(
+                codes,
+                key=lambda c: taxonomy.BY_CODE[c].severity_weight
+                if c in taxonomy.BY_CODE else 0.0,
+            )
+            floors.append((
+                RiskBand.PRIORITY,
+                "FLOOR.danger_sign",
+                f"{taxonomy.label_for(worst)} carries a severity weight of "
+                f"{worst_weight:.2f}, at or above the {DANGER_SIGN_WEIGHT:.2f} "
+                "threshold at which a sign warrants same-day examination on its own.",
+            ))
+        elif worst_weight >= CLINICAL_SIGN_WEIGHT:
+            floors.append((
+                RiskBand.MONITOR,
+                "FLOOR.clinical_sign",
+                "At least one genuine clinical sign is present, so the animal is "
+                "tracked rather than closed without follow-up.",
+            ))
+
+        # A subnormal temperature in an animal that is already showing signs is a
+        # late, poor-prognosis finding -- the animal is decompensating. The
+        # additive score treats it as a deviation like any other, which reads it
+        # as "mildly abnormal" when it means the opposite.
+        if obs.temperature_c is not None and codes:
+            low, _ = NORMAL_TEMPERATURE_C.get(obs.species, (38.0, 39.5))
+            if obs.temperature_c < low:
+                floors.append((
+                    RiskBand.PRIORITY,
+                    "FLOOR.hypothermia",
+                    f"Rectal temperature {obs.temperature_c:.1f} degrees C is below the "
+                    f"{obs.species} normal lower limit of {low:.1f} in an animal that is "
+                    "already symptomatic, which points to decompensation rather than a "
+                    "mild abnormality.",
+                ))
+
+        if obs.deaths_count >= 1:
+            floors.append((
+                RiskBand.PRIORITY,
+                "FLOOR.mortality",
+                f"{obs.deaths_count} death(s) reported; a death in the herd is never "
+                "a routine record.",
+            ))
+
+        if obs.herd_size and obs.herd_size > 0:
+            rate = min(1.0, max(1, obs.affected_count) / obs.herd_size)
+            if rate >= HERD_ATTACK_RATE_FLOOR:
+                floors.append((
+                    RiskBand.PRIORITY,
+                    "FLOOR.attack_rate",
+                    f"{obs.affected_count} of {obs.herd_size} animals affected "
+                    f"({rate * 100:.0f}%); above {HERD_ATTACK_RATE_FLOOR * 100:.0f}% "
+                    "the spread matters more than how mild each case looks.",
+                ))
+
+        for floor, rule_id, evidence in floors:
+            if floor.rank > band.rank:
+                contributions.append(
+                    Contribution(
+                        rule_id=rule_id,
+                        factor="Band floor applied",
+                        points=0.0,
+                        evidence=f"Raised from {band.value} to {floor.value}: {evidence}",
+                    )
+                )
+                band = floor
+
+        return band
 
     @staticmethod
     def _apply_caution_floor(

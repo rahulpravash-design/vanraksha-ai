@@ -1,0 +1,36 @@
+{
+  "evaluated_at": "2026-09-19T07:37:37.505613",
+  "data": "ml/data/synthetic/scenarios.json",
+  "generator_seed": 2026,
+  "notice": "SYNTHETIC DATA. Generated for detector evaluation under known conditions. It carries no claim about real-world disease prevalence and must never be presented as field observation.",
+  "results": [
+    {
+      "config": {
+        "radius_km": 5.0,
+        "window_hours": 120.0,
+        "min_reports": 4,
+        "min_similarity": 0.34
+      },
+      "background_scenarios": 30,
+      "false_alerts_on_background": 4,
+      "false_alerts_per_background_scenario": 0.133,
+      "outbreaks_detected": 30,
+      "outbreaks_missed": 0,
+      "detection_rate": 1.0,
+      "alert_quality": {
+        "alerts_raised": 40,
+        "confirmed": 30,
+        "rejected": 10,
+        "alert_precision": 0.75,
+        "false_alert_rate": 0.25,
+        "event_recall": 1.0
+      },
+      "detection_delay": {
+        "mean_hours": 74.31,
+        "median_hours": 63.11,
+        "max_hours": 159.11,
+        "events": 30
+      }
+    }
+  ]
+}

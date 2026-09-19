@@ -1,0 +1,344 @@
+{
+  "vignettes": 24,
+  "passed": 24,
+  "failed": 0,
+  "under_triage": [],
+  "over_triage": [],
+  "missing_cautions": [],
+  "escalation": {
+    "escalation_recall": 1.0,
+    "escalation_precision": 1.0,
+    "missed_escalations": 0,
+    "false_escalations": 0,
+    "true_escalations": 15,
+    "true_routine": 5,
+    "specificity": 1.0
+  },
+  "classification": {
+    "classes": [
+      {
+        "label": "emergency",
+        "support": 2,
+        "precision": 0.6667,
+        "recall": 1.0,
+        "f1": 0.8
+      },
+      {
+        "label": "monitor",
+        "support": 5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      {
+        "label": "priority",
+        "support": 8,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      {
+        "label": "routine",
+        "support": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      {
+        "label": "urgent",
+        "support": 5,
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1": 0.8889
+      }
+    ],
+    "accuracy": 0.7,
+    "macro_f1": 0.5378,
+    "weighted_f1": 0.7022,
+    "confusion_matrix": {
+      "labels": [
+        "emergency",
+        "monitor",
+        "priority",
+        "routine",
+        "urgent"
+      ],
+      "matrix": [
+        [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          5,
+          0
+        ],
+        [
+          0,
+          0,
+          8,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          4
+        ]
+      ]
+    }
+  },
+  "rows": [
+    {
+      "id": "V001",
+      "band": "emergency",
+      "score": 43.5,
+      "expected_min": "emergency",
+      "expected_max": null,
+      "cautions": [
+        "anthrax_like"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V002",
+      "band": "emergency",
+      "score": 27.2,
+      "expected_min": "emergency",
+      "expected_max": null,
+      "cautions": [
+        "rabies_like"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V003",
+      "band": "urgent",
+      "score": 41.5,
+      "expected_min": "urgent",
+      "expected_max": null,
+      "cautions": [
+        "fmd_like"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V004",
+      "band": "urgent",
+      "score": 30.9,
+      "expected_min": "urgent",
+      "expected_max": null,
+      "cautions": [
+        "fmd_like"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V005",
+      "band": "urgent",
+      "score": 37.2,
+      "expected_min": "urgent",
+      "expected_max": null,
+      "cautions": [
+        "hs_like"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V006",
+      "band": "urgent",
+      "score": 46.8,
+      "expected_min": "urgent",
+      "expected_max": null,
+      "cautions": [
+        "small_ruminant_febrile"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V007",
+      "band": "priority",
+      "score": 28.0,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [
+        "nodular_skin"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V008",
+      "band": "priority",
+      "score": 30.3,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [
+        "abortion_cluster"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V009",
+      "band": "emergency",
+      "score": 55.9,
+      "expected_min": "urgent",
+      "expected_max": null,
+      "cautions": [
+        "anthrax_like",
+        "poultry_mortality"
+      ],
+      "pass": true
+    },
+    {
+      "id": "V010",
+      "band": "priority",
+      "score": 23.9,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V011",
+      "band": "priority",
+      "score": 31.5,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V012",
+      "band": "priority",
+      "score": 26.0,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V013",
+      "band": "priority",
+      "score": 46.1,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V014",
+      "band": "monitor",
+      "score": 18.1,
+      "expected_min": "monitor",
+      "expected_max": "priority",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V015",
+      "band": "monitor",
+      "score": 23.2,
+      "expected_min": "monitor",
+      "expected_max": "priority",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V016",
+      "band": "monitor",
+      "score": 11.7,
+      "expected_min": "monitor",
+      "expected_max": "priority",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V017",
+      "band": "routine",
+      "score": 5.2,
+      "expected_min": null,
+      "expected_max": "monitor",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V018",
+      "band": "routine",
+      "score": 9.8,
+      "expected_min": null,
+      "expected_max": "monitor",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V019",
+      "band": "routine",
+      "score": 5.2,
+      "expected_min": null,
+      "expected_max": "monitor",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V020",
+      "band": "routine",
+      "score": 10.4,
+      "expected_min": null,
+      "expected_max": "monitor",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V021",
+      "band": "priority",
+      "score": 35.0,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V022",
+      "band": "priority",
+      "score": 26.6,
+      "expected_min": "priority",
+      "expected_max": null,
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V023",
+      "band": "routine",
+      "score": 1.4,
+      "expected_min": null,
+      "expected_max": "monitor",
+      "cautions": [],
+      "pass": true
+    },
+    {
+      "id": "V024",
+      "band": "monitor",
+      "score": 25.1,
+      "expected_min": null,
+      "expected_max": "priority",
+      "cautions": [],
+      "pass": true
+    }
+  ],
+  "notice": "Expected bands in this file were authored by the project team from published veterinary triage guidance. They have NOT been ratified by a practising veterinarian. Until they are, this set measures whether the engine does what the project intended -- which is a real and useful property, and is not the same as clinical correctness. See docs/05-ai/limitations.md.",
+  "evaluated_at": "2026-09-19T07:39:56.853303"
+}
