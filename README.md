@@ -116,19 +116,31 @@ exactly the code that runs in production.
 
 ## Quick start
 
-### Docker (recommended)
+### One command (verified — recommended for a demo)
+
+```bash
+./scripts/setup.sh     # once: creates a venv, installs engine + API + web deps
+./scripts/dev.sh        # every time: seeds a demo district on first run, starts both services
+```
+
+Open http://localhost:3000/login. Demo account emails and the shared password
+(`VanrakshaDemo2026!`) are printed the first time `dev.sh` seeds the database;
+delete `vanraksha.db` and re-run to see them again. `Ctrl+C` stops both
+services. This was run end to end in this environment: seed → login → both
+`/docs` and `/login` returning 200 → a real token issued.
+
+### Docker
 
 ```bash
 docker compose up --build
 docker compose exec api python -m app.cli seed --days 90
 ```
 
-Open http://localhost:3000. Sign in with any account the seed command prints
-(password `VanrakshaDemo2026!` for all of them). *(Docker images are written
-for this but not build-verified in this authoring environment — no daemon was
-available here; the manual path below was run end to end in a real browser.)*
+Open http://localhost:3000. Sign in the same way as above. *(Docker images
+are written for this but not build-verified in this authoring environment —
+no daemon was available here; `./scripts/dev.sh` above was.)*
 
-### Manual (verified)
+### Manual, step by step
 
 ```bash
 # 1. AI engine + API
