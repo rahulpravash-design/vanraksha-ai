@@ -170,7 +170,7 @@ Take questions.
 | Page spins forever | API died. `Ctrl+C`, `./scripts/dev.sh`. **Don't re-seed.** |
 | Sweep finds nothing | It already ran. Say so, show the cluster that's there. |
 | Submit fails | Reload `/report`, file it again. |
-| Total failure | Open `docs/pitch-deck.html` from disk — works with no network. Slides 5–7 have the same example. Say the stack is down. |
+| Total failure | Open `docs/pitch-deck.html` from disk — works with no network. Slides 5–7 walk the same story, but with a different assessment — don't promise matching numbers. Say the stack is down. |
 
 **Never** `rm vanraksha.db` in front of judges.
 
