@@ -135,26 +135,28 @@ village holds the injected outbreak, and what each screen shows — see
 [`docs/pitch-deck.html`](docs/pitch-deck.html): a single file that opens from
 disk with its fonts embedded, so it needs no network.
 
-### Deployed
+### Deployed — live and verified
 
 | | |
 |---|---|
 | Web | <https://vanraksha-livestock-web.vercel.app> |
 | API | <https://vanraksha-api.vercel.app> (`/docs` for the OpenAPI UI) |
 
-Both build and deploy from this branch. **The API needs a PostgreSQL database
-before it will serve anything**: it refuses to boot on SQLite outside
-development, deliberately, because a demo silently running on a per-instance
-SQLite file would lose every report between requests. Set
-`VANRAKSHA_DATABASE_URL` on the API project, redeploy, then load the demo
-district once:
+Both deploy from this branch, backed by a managed PostgreSQL database, seeded
+with the demo district. Verified end to end: `/health` returns `200`, login
+issues a real token, an authenticated dashboard read returns the actual
+seeded data (71 reports, 83 animals, Bengaluru Rural district), and CORS is
+correctly scoped to the web origin.
 
-```bash
-./scripts/seed-remote.sh "postgresql://user:pass@host/db?sslmode=require"
-```
+Demo login: any account printed by the seed command, password
+`VanrakshaDemo2026!` — the login page has one-click buttons, so you never
+type it. See [`docs/demo-script.md`](docs/demo-script.md) for the walkthrough.
 
-See [`docs/10-deployment/deployment.md`](docs/10-deployment/deployment.md) for
-the full procedure and the two failures that only appear in a hosted deploy.
+To redeploy from scratch, or to understand three bugs that only ever surface
+in a real hosted deployment (a serverless connection-pool exhaustion, a
+driverless PostgreSQL DSN, and a Vercel framework preset that silently
+breaks routing while still reporting the build `READY`), see
+[`docs/10-deployment/deployment.md`](docs/10-deployment/deployment.md).
 
 ### Docker
 

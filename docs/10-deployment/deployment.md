@@ -74,7 +74,8 @@ would lose every report between requests.
 
 ```bash
 # 1. API
-#    Root directory: repository root. Framework: fastapi.
+#    Root directory: repository root. Framework: leave unset (do NOT pick
+#    "fastapi" from the preset list -- see "Settings that bite" below).
 #    Set the four variables above, then deploy.
 
 # 2. Create the schema and demo data, once, from a machine that can
@@ -104,6 +105,36 @@ Protection.
 set to `apps/web`, or the build fails with `NEXT_NO_VERSION` because there is
 no `package.json` at the repository root. The API project uses the repository
 root, because it needs `services/`.
+
+**Do not set the API project's framework preset to `fastapi`.** It looks like
+the obviously correct choice, and it is wrong for this repository. Vercel's
+FastAPI preset expects its own build convention and does not route traffic
+through `vercel.json`'s rewrite the way a plain Python function does. With the
+preset set, the deployment builds and reports `READY`, but every request --
+including `/health` -- gets an instant platform-level 404
+(`x-response-time-ms` under 1, versus 50+ for a real response), because the
+request never reaches `api/index.py` at all. The build succeeding is not
+evidence the routing works; only a real request is.
+
+The fix is to leave the project's framework **unset** (`null`). That is the
+standard pattern for a hand-written `api/index.py` + `vercel.json` rewrite,
+and it is what this project's API project is configured with. If a future
+redeploy is ever created with `framework: "fastapi"` in `projectSettings`,
+undo it: `PATCH` the project with `{"framework": null}` and redeploy.
+
+**A CORS origin from a plain environment string crashes `Settings()` unless
+the field is marked `NoDecode`.** This is a Python/pydantic-settings issue,
+not a Vercel one, but it only ever shows up in a real deployment: no local run
+or test sets `VANRAKSHA_CORS_ORIGINS` as an environment string, so nothing
+local exercises the code path that broke. See the fix in
+`services/api/app/config.py` and its regression tests in
+`services/api/tests/test_meta.py::TestCorsOriginsFromEnvironment` before
+touching that field again.
+
+**A green build is not a working deployment.** Both bugs above shipped a
+`READY` deployment that was completely non-functional. The only reliable
+check is a real request against the live URL -- `curl` from an environment
+with real network access, not just "the build succeeded."
 
 ## Other hosts
 
