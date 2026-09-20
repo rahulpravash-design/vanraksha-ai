@@ -52,10 +52,16 @@ one-click buttons, you never type it.
 > "The score said priority. The rule forced urgent. There are eight
 > rules like this."
 
-Scroll to **Why it scored 56**:
+Scroll to **Why it scored 56** — seven rows:
 
 > "Every point has a named rule and its evidence. A vet who disagrees
 > knows exactly which rule to argue with."
+
+Point at the bottom row, in red, marked **Floor**:
+
+> "There's the override, sitting in the same list. Zero points, and it
+> still set the band. The arithmetic is auditable — and so is the thing
+> that overrules the arithmetic."
 
 Point at the `+6.0` row — *6 distinct signs*:
 
@@ -137,10 +143,10 @@ Scroll to bottom — **Response performance · Met target 21.4%**:
 > decorate."
 
 → Click the **urgent** case open. **Signs** row shows all six codes.
-Click **Why it scored 56**:
+Click **Why it scored 56** — the same seven rows, floor included:
 
-> "Same reasons the farmer saw. One record, one set of rules, two
-> audiences."
+> "Same reasons the farmer saw. Same seven rules, same override at the
+> bottom. One record, one set of rules, two audiences."
 
 Point at **Record outcome and close**:
 
@@ -174,7 +180,12 @@ Take questions.
 
 Fresh seed, district, 30 days: **71 reports** (50 previous, rising) ·
 83 animals · 7 open cases, all overdue · 1 death · 56 overdue vaccinations ·
-bands 28/31/11/1 · **0 clusters**
+**0 clusters**
+
+Band chart, five rows top to bottom: routine 28 · monitor 31 · priority 11 ·
+**urgent 0** · emergency 1. The urgent row is empty until the farmer files —
+by the time the district officer looks, it reads 1. That bar is the report
+from three minutes ago.
 
 After the farmer files: 72 reports, 8 open cases. That's correct.
 

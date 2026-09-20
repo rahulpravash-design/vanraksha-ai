@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError, api } from "@/lib/api";
 import { formatDateTime, hoursUntil, relativeTime } from "@/lib/format";
+import { explanationRows, isBandFloor } from "@/lib/bands";
 import { BandBadge, Button, Card, EmptyState, Notice, Spinner } from "@/components/ui";
 import type { Case, HealthReport } from "@/lib/types";
 
@@ -216,12 +217,18 @@ function CaseRow({
                         Why it scored {Math.round(report.assessment.score)}
                       </summary>
                       <ul className="mt-2 space-y-1.5">
-                        {report.assessment.contributions
-                          .filter((c) => c.points !== 0)
+                        {explanationRows(report.assessment.contributions)
                           .map((c) => (
                             <li key={c.rule_id} className="flex gap-2.5">
-                              <span className="tabular w-10 shrink-0 text-right font-medium text-ink">
-                                {c.points > 0 ? "+" : ""}{c.points}
+                              <span
+                                className="tabular w-10 shrink-0 text-right font-medium"
+                                style={{
+                                  color: isBandFloor(c)
+                                    ? "var(--status-critical)"
+                                    : "var(--text-primary)",
+                                }}
+                              >
+                                {isBandFloor(c) ? "Floor" : `${c.points > 0 ? "+" : ""}${c.points}`}
                               </span>
                               <span className="text-ink-secondary">{c.evidence}</span>
                             </li>

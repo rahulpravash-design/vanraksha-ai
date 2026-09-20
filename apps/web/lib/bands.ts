@@ -84,3 +84,28 @@ export function syndromeLabel(code: string | null | undefined): string {
   if (!code) return "Mixed";
   return SYNDROME_LABEL[code] ?? code.replace(/_/g, " ");
 }
+
+/**
+ * A band floor is a rule that raised the band on its own, without adding
+ * points -- a notifiable presentation, a death, a danger sign.
+ *
+ * It scores zero by design, so filtering an explanation down to the rows that
+ * moved the score silently drops the one rule that decided the band. That is
+ * the opposite of what the engine records it for: it emits the floor as a
+ * contribution precisely so a reviewer is never left with a band the visible
+ * points do not add up to.
+ */
+export function isBandFloor(contribution: { rule_id: string }): boolean {
+  return contribution.rule_id.startsWith("FLOOR.");
+}
+
+/**
+ * The rows worth showing: anything that moved the score, plus every band
+ * floor. Both the farmer's verdict and the vet's case detail use this, so the
+ * two audiences never see a different set of reasons for the same record.
+ */
+export function explanationRows<T extends { rule_id: string; points: number }>(
+  contributions: T[],
+): T[] {
+  return contributions.filter((c) => c.points !== 0 || isBandFloor(c));
+}

@@ -23,7 +23,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ApiError, api } from "@/lib/api";
 import { submitOrQueue } from "@/lib/offline";
 import { newClientUuid } from "@/lib/format";
-import { syndromeLabel } from "@/lib/bands";
+import { explanationRows, isBandFloor, syndromeLabel } from "@/lib/bands";
 import {
   BandBadge, Button, Card, EmptyState, Field, Notice, Spinner,
   inputClass, inputStyle,
@@ -487,21 +487,27 @@ function OutcomeView({ outcome, onAnother }: { outcome: NonNullable<Outcome>; on
             Every point comes from a named rule. Nothing here is a guess.
           </p>
           <ul className="mt-4 space-y-2.5">
-            {assessment.contributions
-              .filter((contribution) => contribution.points !== 0)
+            {explanationRows(assessment.contributions)
               .map((contribution) => (
                 <li key={contribution.rule_id} className="flex gap-3">
                   <span
                     className="tabular w-12 shrink-0 text-right text-xs font-semibold"
                     style={{
-                      color:
-                        contribution.points > 0
+                      color: isBandFloor(contribution)
+                        ? "var(--status-critical)"
+                        : contribution.points > 0
                           ? "var(--text-primary)"
                           : "var(--success-text)",
                     }}
                   >
-                    {contribution.points > 0 ? "+" : ""}
-                    {contribution.points}
+                    {isBandFloor(contribution) ? (
+                      "Floor"
+                    ) : (
+                      <>
+                        {contribution.points > 0 ? "+" : ""}
+                        {contribution.points}
+                      </>
+                    )}
                   </span>
                   <span className="text-xs leading-relaxed">
                     <span className="font-medium text-ink">{contribution.factor}</span>
