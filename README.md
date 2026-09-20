@@ -135,6 +135,27 @@ village holds the injected outbreak, and what each screen shows — see
 [`docs/pitch-deck.html`](docs/pitch-deck.html): a single file that opens from
 disk with its fonts embedded, so it needs no network.
 
+### Deployed
+
+| | |
+|---|---|
+| Web | <https://vanraksha-livestock-web.vercel.app> |
+| API | <https://vanraksha-api.vercel.app> (`/docs` for the OpenAPI UI) |
+
+Both build and deploy from this branch. **The API needs a PostgreSQL database
+before it will serve anything**: it refuses to boot on SQLite outside
+development, deliberately, because a demo silently running on a per-instance
+SQLite file would lose every report between requests. Set
+`VANRAKSHA_DATABASE_URL` on the API project, redeploy, then load the demo
+district once:
+
+```bash
+./scripts/seed-remote.sh "postgresql://user:pass@host/db?sslmode=require"
+```
+
+See [`docs/10-deployment/deployment.md`](docs/10-deployment/deployment.md) for
+the full procedure and the two failures that only appear in a hosted deploy.
+
 ### Docker
 
 ```bash
