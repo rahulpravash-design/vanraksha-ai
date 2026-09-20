@@ -1,0 +1,31 @@
+<section id="stack" data-transition="fade" style="background:#152A22; color:#F7F5EF; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:40px">
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; letter-spacing:0.16em; text-transform:uppercase; color:#8FD4BE">Architecture</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:400; line-height:1.15; width:1560px">The engine that ships is the engine the harness evaluates</h2>
+  </div>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:16px">
+    <div style="width:1400px; background:#1C3830; border:1px solid #2E463B; border-radius:14px; padding:20px 28px; display:flex; justify-content:space-between; align-items:center; gap:24px">
+      <h3 style="font-size:34px; font-weight:600; line-height:1.2">Next.js web app &middot; offline PWA</h3>
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:26px; color:#8FD4BE">apps/web</p>
+    </div>
+    <x-shape kind="arrow-down" style="width:34px; height:44px; background:#8FD4BE"></x-shape>
+    <div style="width:1400px; display:flex; gap:16px">
+      <div style="flex:1; background:#1C3830; border:1px solid #2E463B; border-radius:14px; padding:20px 28px; display:flex; flex-direction:column; gap:6px">
+        <h3 style="font-size:34px; font-weight:600; line-height:1.2">FastAPI + SQLAlchemy</h3>
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:26px; color:#8FD4BE">services/api</p>
+      </div>
+      <div style="flex:1; background:#1C3830; border:1px solid #E88A5A; border-radius:14px; padding:20px 28px; display:flex; flex-direction:column; gap:6px">
+        <h3 style="font-size:34px; font-weight:600; line-height:1.2">vanraksha_ai engine</h3>
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:26px; color:#E88A5A">services/ai-engine</p>
+      </div>
+    </div>
+    <x-shape kind="arrow-down" style="width:34px; height:44px; background:#8FD4BE"></x-shape>
+    <div style="width:1400px; background:#1C3830; border:1px solid #2E463B; border-radius:14px; padding:20px 28px; display:flex; justify-content:space-between; align-items:center; gap:24px">
+      <h3 style="font-size:34px; font-weight:600; line-height:1.2">PostgreSQL in production &middot; SQLite in development</h3>
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:26px; color:#8FD4BE">database</p>
+    </div>
+  </div>
+  <p style="font-size:30px; line-height:1.5; color:#A8BDB2; width:1560px">The engine has <b>zero third-party runtime dependencies</b>, so it imports identically inside the API container, a notebook, or the evaluation scripts. That is what makes the measurements on the previous slides mean anything.</p>
+  <p style="position:absolute; left:128px; bottom:64px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#A8BDB2">VANRAKSHA AI &middot; SIH26128 &middot; 12</p>
+  <aside>The orange box is the point. If the evaluation harness tested a reimplementation of the scoring logic, the numbers would be theatre. Because the engine has no runtime dependencies, ml/ imports the exact module the API calls in production.</aside>
+</section>

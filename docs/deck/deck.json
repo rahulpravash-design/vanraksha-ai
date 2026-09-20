@@ -1,0 +1,59 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-09-19T18:30:00Z" },
+  "title": "VANRAKSHA AI — SIH26128",
+  "order": [
+    "cover",
+    "gap",
+    "nadres",
+    "loop",
+    "triage",
+    "cautions",
+    "cluster",
+    "evidence-detector",
+    "evidence-triage",
+    "honesty",
+    "field",
+    "stack",
+    "built",
+    "roadmap",
+    "close"
+  ],
+  "sections": {
+    "s1": {
+      "description": "Why the real gap is response speed, not disease prediction",
+      "start": "cover"
+    },
+    "s2": {
+      "description": "The field-to-response loop, and the safety rules built into it",
+      "start": "loop"
+    },
+    "s3": {
+      "description": "What the evaluation harness measures — and what it refuses to claim",
+      "start": "evidence-detector"
+    },
+    "s4": {
+      "description": "How it is engineered for the field, and what is actually built",
+      "start": "field"
+    },
+    "s5": {
+      "description": "What ships next, and the closing ask",
+      "start": "roadmap"
+    }
+  },
+  "faces": {
+    "source-serif-4": {
+      "family": "Source Serif 4",
+      "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300..700&display=swap"
+    },
+    "ibm-plex-sans": {
+      "family": "IBM Plex Sans",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    },
+    "ibm-plex-mono": {
+      "family": "IBM Plex Mono",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    }
+  },
+  "designSystems": []
+}

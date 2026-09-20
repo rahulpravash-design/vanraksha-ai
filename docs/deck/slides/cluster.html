@@ -1,0 +1,61 @@
+<section id="cluster" data-transition="fade" style="background:#F7F5EF; color:#152A22; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:36px">
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; letter-spacing:0.16em; text-transform:uppercase; color:#A33F13">Cluster detection</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:400; line-height:1.15; width:1560px">One report proves nothing. Four nearby, recent and similar ones do.</h2>
+  </div>
+  <div style="display:flex; gap:48px; align-items:center">
+    <svg aria-label="Field reports scattered across a district; four nearby reports with a similar presentation are ringed as a detected cluster" width="760" height="360" viewBox="0 0 760 360">
+      <rect x="0" y="0" width="760" height="360" rx="16" fill="#EDEAE0"/>
+      <circle cx="55" cy="45" r="8" fill="#9FB0A7"/>
+      <circle cx="125" cy="110" r="8" fill="#9FB0A7"/>
+      <circle cx="85" cy="245" r="8" fill="#9FB0A7"/>
+      <circle cx="185" cy="55" r="8" fill="#9FB0A7"/>
+      <circle cx="210" cy="195" r="8" fill="#9FB0A7"/>
+      <circle cx="150" cy="305" r="8" fill="#9FB0A7"/>
+      <circle cx="265" cy="105" r="8" fill="#9FB0A7"/>
+      <circle cx="295" cy="285" r="8" fill="#9FB0A7"/>
+      <circle cx="335" cy="40" r="8" fill="#9FB0A7"/>
+      <circle cx="355" cy="170" r="8" fill="#9FB0A7"/>
+      <circle cx="400" cy="315" r="8" fill="#9FB0A7"/>
+      <circle cx="60" cy="175" r="8" fill="#9FB0A7"/>
+      <circle cx="430" cy="60" r="8" fill="#9FB0A7"/>
+      <circle cx="420" cy="255" r="8" fill="#9FB0A7"/>
+      <circle cx="690" cy="60" r="8" fill="#9FB0A7"/>
+      <circle cx="710" cy="290" r="8" fill="#9FB0A7"/>
+      <circle cx="620" cy="330" r="8" fill="#9FB0A7"/>
+      <circle cx="500" cy="330" r="8" fill="#9FB0A7"/>
+      <circle cx="330" cy="240" r="8" fill="#9FB0A7"/>
+      <circle cx="555" cy="180" r="100" fill="none" stroke="#C75B2A" stroke-width="3" stroke-dasharray="10 8"/>
+      <circle cx="510" cy="140" r="11" fill="#C75B2A"/>
+      <circle cx="575" cy="125" r="11" fill="#C75B2A"/>
+      <circle cx="600" cy="200" r="11" fill="#C75B2A"/>
+      <circle cx="525" cy="215" r="11" fill="#C75B2A"/>
+    </svg>
+    <div style="flex:1; display:flex; flex-direction:column; gap:18px">
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; letter-spacing:0.14em; text-transform:uppercase; color:#A33F13">Declared only when all hold</p>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #DAD5C8; padding:0 0 14px">
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:30px; font-weight:600; color:#152A22; width:190px">&le; 5 km</p>
+        <p style="font-size:28px; color:#4A5A52; flex:1">apart on the ground</p>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #DAD5C8; padding:0 0 14px">
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:30px; font-weight:600; color:#152A22; width:190px">&le; 120 h</p>
+        <p style="font-size:28px; color:#4A5A52; flex:1">apart in time</p>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #DAD5C8; padding:0 0 14px">
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:30px; font-weight:600; color:#152A22; width:190px">&ge; 0.34</p>
+        <p style="font-size:28px; color:#4A5A52; flex:1">syndromic similarity</p>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #DAD5C8; padding:0 0 14px">
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:30px; font-weight:600; color:#152A22; width:190px">same</p>
+        <p style="font-size:28px; color:#4A5A52; flex:1">species group</p>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:0 0 14px">
+        <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:30px; font-weight:600; color:#A33F13; width:190px">&ge; 4</p>
+        <p style="font-size:28px; color:#4A5A52; flex:1">reports in the neighbourhood</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:28px; line-height:1.5; color:#4A5A52; width:1560px">These thresholds are density-dependent. They were chosen by parameter sweep, not intuition &mdash; and they must be re-tuned per district before any real deployment.</p>
+  <p style="position:absolute; left:128px; bottom:64px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#4A5A52">VANRAKSHA AI &middot; SIH26128 &middot; 07</p>
+  <aside>DBSCAN over a custom neighbourhood predicate: distance, time, syndromic Jaccard similarity and species group all have to agree before two reports count as neighbours. The last row is the one the next slide is about &mdash; four rather than three is not a guess.</aside>
+</section>

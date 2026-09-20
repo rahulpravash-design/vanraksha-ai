@@ -131,7 +131,9 @@ services. This was run end to end in this environment: seed → login → both
 
 For a guided walk through the seeded district — which account to use, which
 village holds the injected outbreak, and what each screen shows — see
-[`docs/demo-script.md`](docs/demo-script.md).
+[`docs/demo-script.md`](docs/demo-script.md). The pitch deck is checked in as
+[`docs/pitch-deck.html`](docs/pitch-deck.html): a single file that opens from
+disk with its fonts embedded, so it needs no network.
 
 ### Docker
 
@@ -179,7 +181,7 @@ services/ai-engine/      Dependency-free triage/clustering/anomaly engine
 services/api/            FastAPI + SQLAlchemy: auth, reports, cases, sweep
 ml/                      Synthetic data generation + evaluation harnesses
 docs/                    Problem framing, architecture, AI limitations,
-                         and the live demo run sheet (demo-script.md)
+                         the demo run sheet, and the pitch deck
 docker-compose.yml       One-command local stack
 ```
 

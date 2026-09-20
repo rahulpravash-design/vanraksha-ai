@@ -1,0 +1,25 @@
+<section id="evidence-triage" data-transition="fade" style="background:#F7F5EF; color:#152A22; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; letter-spacing:0.16em; text-transform:uppercase; color:#A33F13">Evidence, not claims</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:400; line-height:1.15; width:1560px">What the triage engine does against 24 clinical vignettes</h2>
+  </div>
+  <div style="display:flex; gap:32px; align-items:stretch">
+    <div style="flex:1; border-top:2px solid #C75B2A; padding:28px 0 0; display:flex; flex-direction:column; gap:12px">
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:104px; font-weight:500; line-height:1.05">24/24</p>
+      <p style="font-size:26px; line-height:1.4; color:#4A5A52">vignettes met their expected band</p>
+    </div>
+    <div style="flex:1; border-top:2px solid #DAD5C8; padding:28px 0 0; display:flex; flex-direction:column; gap:12px">
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:104px; font-weight:500; line-height:1.05">1.00</p>
+      <p style="font-size:26px; line-height:1.4; color:#4A5A52">escalation recall &mdash; nothing needing a vet was missed</p>
+    </div>
+    <div style="flex:1; border-top:2px solid #DAD5C8; padding:28px 0 0; display:flex; flex-direction:column; gap:12px">
+      <p style="font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:104px; font-weight:500; line-height:1.05">1.00</p>
+      <p style="font-size:26px; line-height:1.4; color:#4A5A52">escalation precision &mdash; nothing routine was escalated</p>
+    </div>
+  </div>
+  <div style="background:#EDEAE0; border:1px solid #DAD5C8; border-radius:12px; padding:28px 32px; display:flex; flex-direction:column; gap:12px">
+    <p style="font-size:28px; line-height:1.5; color:#152A22">Six of these vignettes <b>failed</b> when the harness was first run: single catastrophic signs like &ldquo;cannot stand&rdquo; were under-triaged, because no one sign could clear the threshold by arithmetic alone. Clinical floors were added because the measurement said so.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#4A5A52">VANRAKSHA AI &middot; SIH26128 &middot; 09 &middot; ml/evaluate_triage.py</p>
+  <aside>Do not present 24 out of 24 as the achievement. The achievement is the six failures: the harness found a real under-triage bug in our own scoring, and the fix is in the engine that ships. A perfect score on the first run would have meant the vignettes were too easy. The next slide says what the score does not mean.</aside>
+</section>
