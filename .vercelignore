@@ -1,14 +1,10 @@
+# Shared by both Vercel projects (API at the repository root, web at apps/web),
+# so this must only exclude things NEITHER build needs. Excluding apps/web here
+# to slim the API bundle would delete the web project's own source before its
+# build runs.
 .venv
 node_modules
 .next
-apps/web
-ml
-docs
-database
-packages
-infrastructure
-scripts
-**/tests
 **/__pycache__
 *.db
 *.db-*
