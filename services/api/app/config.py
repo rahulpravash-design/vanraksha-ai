@@ -57,6 +57,30 @@ class Settings(BaseSettings):
     llm_api_key: str | None = None
     llm_model: str = "claude-sonnet-5"
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def _normalise_postgres_dsn(cls, value):
+        """Pin PostgreSQL DSNs to psycopg 3.
+
+        Managed providers hand out a driverless URL -- ``postgres://`` from
+        Heroku-lineage services, ``postgresql://`` from most others. Neither
+        names a driver, and SQLAlchemy resolves a bare ``postgresql`` to
+        psycopg2, which this project does not install: it depends on psycopg 3.
+        The result is a deployment that crashes on first connection with
+        ``ModuleNotFoundError: psycopg2`` while the DSN looks perfectly correct,
+        and ``postgres://`` is rejected by SQLAlchemy outright.
+
+        Rewriting here rather than at the call site means every consumer of the
+        setting -- the app, the CLI, Alembic, the tests -- gets the same URL,
+        and an operator can paste whatever their provider gave them.
+        """
+        if not isinstance(value, str):
+            return value
+        for prefix in ("postgres://", "postgresql://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value[len(prefix):]
+        return value
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_origins(cls, value):

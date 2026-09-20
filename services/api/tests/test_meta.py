@@ -1,5 +1,6 @@
 """Service-level behaviour: health, docs, error shape, and the demo dataset."""
 
+from app.config import Settings
 from app.models import Case, Cluster, HealthReport, RiskAssessmentRecord
 
 
@@ -131,3 +132,39 @@ class TestSeedRealism:
         assert any(
             c.status not in (CaseStatus.RESOLVED, CaseStatus.CLOSED) for c in cases
         )
+
+
+class TestDatabaseDsnNormalisation:
+    """Managed PostgreSQL providers hand out driverless URLs.
+
+    SQLAlchemy resolves a bare ``postgresql`` scheme to psycopg2, which this
+    project does not install -- it uses psycopg 3. Without normalisation a
+    correct-looking DSN from any managed provider crashes on first connection,
+    and only in a deployment, which is the worst place to find out.
+    """
+
+    def test_heroku_style_url_is_pinned_to_psycopg3(self):
+        settings = Settings(database_url="postgres://user:pw@host:5432/db")
+        assert settings.database_url == "postgresql+psycopg://user:pw@host:5432/db"
+
+    def test_bare_postgresql_url_is_pinned_to_psycopg3(self):
+        settings = Settings(database_url="postgresql://user:pw@host:5432/db")
+        assert settings.database_url == "postgresql+psycopg://user:pw@host:5432/db"
+
+    def test_an_explicit_driver_is_left_alone(self):
+        dsn = "postgresql+psycopg://user:pw@host:5432/db"
+        assert Settings(database_url=dsn).database_url == dsn
+
+    def test_query_parameters_survive_the_rewrite(self):
+        settings = Settings(database_url="postgresql://u:p@h/db?sslmode=require")
+        assert settings.database_url == "postgresql+psycopg://u:p@h/db?sslmode=require"
+
+    def test_sqlite_is_untouched(self):
+        assert Settings(database_url="sqlite:///./x.db").database_url == "sqlite:///./x.db"
+
+    def test_normalised_url_is_resolvable_by_sqlalchemy(self):
+        from sqlalchemy.engine.url import make_url
+
+        settings = Settings(database_url="postgres://u:p@h/db")
+        # Raises if the driver cannot be resolved.
+        assert make_url(settings.database_url).drivername == "postgresql+psycopg"
