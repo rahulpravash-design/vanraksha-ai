@@ -1,0 +1,14 @@
+.venv
+node_modules
+.next
+apps/web
+ml
+docs
+database
+packages
+infrastructure
+scripts
+**/tests
+**/__pycache__
+*.db
+*.db-*

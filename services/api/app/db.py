@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterator
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.pool import NullPool, StaticPool
 
 from .config import get_settings
 
@@ -22,6 +23,13 @@ if settings.database_url.startswith("sqlite"):
         # between requests inside a single test.
         _engine_kwargs["poolclass"] = StaticPool
     _engine_kwargs.pop("pool_pre_ping", None)
+elif os.getenv("VERCEL"):
+    # Serverless. Each invocation may run in a fresh process, so a pooled
+    # connection is never reused -- it just holds a PostgreSQL slot open that
+    # nothing will claim again, and enough concurrent invocations exhaust the
+    # server's connection limit. NullPool opens and closes per session, which
+    # is the right trade when the process itself is short-lived.
+    _engine_kwargs["poolclass"] = NullPool
 
 engine = create_engine(settings.database_url, connect_args=_connect_args, **_engine_kwargs)
 

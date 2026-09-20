@@ -1,0 +1,17 @@
+# Runtime dependencies for the serverless API (api/index.py).
+#
+# The two first-party packages under services/ are NOT listed here -- they are
+# put on sys.path by the entrypoint, which avoids installing local paths during
+# a serverless build. Keep this in step with services/api/pyproject.toml.
+fastapi>=0.115
+sqlalchemy>=2.0
+pydantic>=2.8
+pydantic-settings>=2.4
+email-validator>=2.2
+bcrypt>=4.1
+pyjwt>=2.9
+python-multipart>=0.0.9
+
+# PostgreSQL driver. SQLite is refused outside development by
+# Settings.validate_for_runtime, so a deployment always needs this.
+psycopg[binary]>=3.2
