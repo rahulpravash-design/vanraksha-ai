@@ -168,3 +168,37 @@ class TestDatabaseDsnNormalisation:
         settings = Settings(database_url="postgres://u:p@h/db")
         # Raises if the driver cannot be resolved.
         assert make_url(settings.database_url).drivername == "postgresql+psycopg"
+
+
+class TestCorsOriginsFromEnvironment:
+    """A single plain-URL CORS origin must not crash settings construction.
+
+    pydantic-settings treats any list-typed field as "complex" and, by
+    default, JSON-decodes the raw environment string for it before any
+    validator runs -- including a mode="before" one. A bare origin like
+    "https://example.com" is not valid JSON, so every request crashed with a
+    JSONDecodeError before `_split_origins` ever got a chance to run. This
+    only reproduces when the setting actually comes from an environment
+    variable string, which local runs and the test suite never exercised --
+    it was only ever caught by running the deployed image for real.
+    """
+
+    def test_a_single_origin_from_env_does_not_crash(self, monkeypatch):
+        monkeypatch.setenv("VANRAKSHA_CORS_ORIGINS", "https://example.vercel.app")
+        assert Settings().cors_origins == ["https://example.vercel.app"]
+
+    def test_comma_separated_origins_from_env_still_split(self, monkeypatch):
+        monkeypatch.setenv(
+            "VANRAKSHA_CORS_ORIGINS",
+            "http://localhost:3000,https://example.vercel.app",
+        )
+        assert Settings().cors_origins == [
+            "http://localhost:3000",
+            "https://example.vercel.app",
+        ]
+
+    def test_no_env_var_keeps_the_loopback_default(self, monkeypatch):
+        monkeypatch.delenv("VANRAKSHA_CORS_ORIGINS", raising=False)
+        origins = Settings().cors_origins
+        assert "http://localhost:3000" in origins
+        assert "http://127.0.0.1:3000" in origins

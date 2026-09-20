@@ -9,9 +9,10 @@ start in production without one.
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 #: Long enough to satisfy the HMAC-SHA256 minimum key length (RFC 7518 s3.2)
 #: so that development does not run on a configuration production would reject.
@@ -40,7 +41,17 @@ class Settings(BaseSettings):
     # Both spellings of the loopback host. A browser treats "localhost" and
     # "127.0.0.1" as different origins, so a dev default carrying only one of
     # them fails depending on which URL the developer happens to type.
-    cors_origins: list[str] = Field(
+    #
+    # NoDecode matters here and is not decoration: pydantic-settings treats any
+    # list-typed field as "complex" and, by default, JSON-decodes the raw env
+    # string for it *before* any validator runs -- including a mode="before"
+    # one. A plain origin like "https://example.com" is not valid JSON, so
+    # every request crashed with a JSONDecodeError the validator below never
+    # got a chance to catch. NoDecode is what hands the raw string to
+    # `_split_origins` unparsed, which is what that validator was already
+    # written to expect. Caught by running the deployed image for real rather
+    # than against SQLite, where this env var is never set from a string.
+    cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
     )
 
